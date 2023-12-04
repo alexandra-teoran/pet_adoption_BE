@@ -1,8 +1,11 @@
 package com.example.pet_adoption.dto;
 
+import lombok.Data;
+
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Data
 public class ExceptionResponseDto {
     private final String timestamp= ZonedDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     private int statusCode;
