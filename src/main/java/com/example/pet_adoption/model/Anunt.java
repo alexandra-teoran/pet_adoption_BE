@@ -14,5 +14,6 @@ public class Anunt extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "userId", referencedColumnName = "id", nullable = true)
     private User user;
-
+    @Column(name="path", nullable = false)
+    private String path;
 }
