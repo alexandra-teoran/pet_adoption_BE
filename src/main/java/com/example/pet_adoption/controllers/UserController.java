@@ -2,12 +2,16 @@ package com.example.pet_adoption.controllers;
 
 import com.example.pet_adoption.model.User;
 import com.example.pet_adoption.services.UserService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.crypto.SecretKey;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://127.0.0.1:5500")
@@ -22,22 +26,43 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public User getUserById (@RequestParam final long id) {
+    public User getUserById (@PathVariable  final long id) {
         return userService.getUserById(id);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody User loginUser) {
+    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody User loginUser) {
         // Verifică credențialele utilizatorului
         User existingUser = userService.getUserByEmail(loginUser.getEmail());
-
+        System.out.println("login");
         if (existingUser != null && existingUser.getPassword().equals(loginUser.getPassword())) {
             // Autentificare reușită
-            return ResponseEntity.ok("Conectare reușită!");
+            System.out.println("in if");
+            String token = generateToken(existingUser.getId());
+
+            // Returnează un obiect JSON care conține token și userId
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("userId", existingUser.getId());
+
+            System.out.println("Conectare reușită! User ID: " + existingUser.getId());
+            return ResponseEntity.ok(response);
         } else {
             // Autentificare eșuată
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email sau parolă incorecte.");
-        }
+            System.out.println("in else");
+            System.out.println("Eșec la conectare. User: " + loginUser.getEmail() + ", Password: " + loginUser.getPassword());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", "Email sau parolă incorecte."));        }
+    }
+
+    private String generateToken(long userId) {
+        SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+        return Jwts.builder()
+                .setSubject(Long.toString(userId))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 864000000)) // Expiră în 10 zile
+                .signWith(secretKey)
+                .compact();
     }
 
     @DeleteMapping("/id/{id}")

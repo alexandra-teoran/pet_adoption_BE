@@ -68,4 +68,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.ok().body(responseDto);
     }
 
+    @ExceptionHandler(NoAnuntFoundByUserIdException.class)
+    public ResponseEntity<ExceptionResponseDto> handleConflictNoAnuntFoundByUserIdException(NoAnuntFoundByUserIdException exception){
+
+        ExceptionResponseDto responseDto = new ExceptionResponseDto(
+                exception.getHttpStatus().value(),
+                exception.getHttpStatus().getReasonPhrase(),
+                exception.getMessage()
+        );
+
+        return ResponseEntity.ok().body(responseDto);
+    }
+
 }

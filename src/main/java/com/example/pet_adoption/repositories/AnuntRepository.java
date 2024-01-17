@@ -10,4 +10,7 @@ public interface AnuntRepository extends JpaRepository<Anunt, Long>{
 
     @Query("SELECT u FROM Anunt u WHERE u.name = :name")
     List<Anunt> findByName(String name);
+
+    @Query("SELECT u FROM Anunt u WHERE u.user.id = :userId")
+    List<Anunt> findByUserId(Long userId);
 }

@@ -16,4 +16,8 @@ public class Anunt extends BaseEntity{
     private User user;
     @Column(name="path", nullable = false)
     private String path;
+    @Column(name="nrLikes", nullable = true)
+    private int nrLikes;
+    @Column(name = "likedByCurrentUser", nullable = true)
+    private boolean likedByCurrentUser;
 }
